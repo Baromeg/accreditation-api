@@ -12,3 +12,34 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  firstName    String
+  lastName     String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  accreditations Accreditation[]
+}
+
+model Accreditation {
+  id             String              @id @default(uuid())
+  name           String
+  status         AccreditationStatus @default(PENDING)
+  expirationDate DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum AccreditationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
