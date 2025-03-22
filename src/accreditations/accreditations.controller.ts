@@ -1,4 +1,15 @@
-import { UseGuards, Controller, Get, Post, Body, Request, Patch, Param } from '@nestjs/common';
+import {
+  UseGuards,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Request,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AccreditationsService } from './accreditations.service';
 import { AccreditationResponseDto } from './dto/accreditation-response.dto';
@@ -33,5 +44,11 @@ export class AccreditationsController {
   ): Promise<AccreditationResponseDto> {
     const updated = await this.accreditationsService.updateForUser(req.user.userId, id, dto);
     return new AccreditationResponseDto(updated);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async delete(@Request() req, @Param('id') id: string): Promise<void> {
+    await this.accreditationsService.deleteForUser(req.user.userId, id);
   }
 }

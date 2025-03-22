@@ -34,6 +34,7 @@ export class AccreditationsService {
   }
 
   async updateForUser(userId: string, id: string, dto: UpdateAccreditationDto) {
+    this.logger.log(`Updating accreditation ${id} for userId=${userId}`);
     const accreditation = await this.prisma.accreditation.findUnique({ where: { id } });
 
     if (!accreditation) {
@@ -44,9 +45,35 @@ export class AccreditationsService {
       throw new ForbiddenException('You cannot modify this accreditation');
     }
 
+    this.logger.log(
+      `Accreditation updated: "${dto.name}" (userId=${userId}, id=${accreditation.id})`,
+    );
+
     return this.prisma.accreditation.update({
       where: { id },
       data: { name: dto.name },
     });
+  }
+
+  async deleteForUser(userId: string, id: string): Promise<void> {
+    this.logger.log(`Attempting to delete accreditation ${id} for userId=${userId}`);
+
+    const accreditation = await this.prisma.accreditation.findUnique({ where: { id } });
+
+    if (!accreditation) {
+      throw new NotFoundException('Accreditation not found');
+    }
+
+    if (accreditation.userId !== userId) {
+      throw new ForbiddenException('You cannot delete this accreditation');
+    }
+
+    if (accreditation.status !== 'PENDING') {
+      this.logger.warn(`User ${userId} attempted to delete non-pending accreditation ${id}`);
+      throw new ForbiddenException('Only pending accreditations can be deleted');
+    }
+
+    await this.prisma.accreditation.delete({ where: { id } });
+    this.logger.log(`Deleted accreditation ${id} for userId=${userId}`);
   }
 }
