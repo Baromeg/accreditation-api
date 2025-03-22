@@ -1,8 +1,9 @@
-import { UseGuards, Controller, Get, Post, Body, Request } from '@nestjs/common';
+import { UseGuards, Controller, Get, Post, Body, Request, Patch, Param } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AccreditationsService } from './accreditations.service';
 import { AccreditationResponseDto } from './dto/accreditation-response.dto';
 import { CreateAccreditationDto } from './dto/create-accreditation.dto';
+import { UpdateAccreditationDto } from './dto/update-accreditation.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('accreditations')
@@ -22,5 +23,15 @@ export class AccreditationsController {
   ): Promise<AccreditationResponseDto> {
     const acc = await this.accreditationsService.createForUser(req.user.userId, dto);
     return new AccreditationResponseDto(acc);
+  }
+
+  @Patch(':id')
+  async update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dto: UpdateAccreditationDto,
+  ): Promise<AccreditationResponseDto> {
+    const updated = await this.accreditationsService.updateForUser(req.user.userId, id, dto);
+    return new AccreditationResponseDto(updated);
   }
 }
