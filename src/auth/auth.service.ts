@@ -1,10 +1,11 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { Tokens } from './auth.types';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -43,6 +44,27 @@ export class AuthService {
       );
       throw error;
     }
+  }
+
+  async login(dto: LoginDto): Promise<Tokens> {
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user) {
+      this.logger.warn(`Login failed: User not found (${dto.email})`);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const passwordMatches = await bcrypt.compare(dto.password, user.passwordHash);
+    if (!passwordMatches) {
+      this.logger.warn(`Login failed: Wrong password (${dto.email})`);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const tokens = await this.generateTokens(user.id, user.email);
+    const hashedRefreshToken = await bcrypt.hash(tokens.refresh_token, 10);
+    await this.usersService.updateRefreshToken(user.id, hashedRefreshToken);
+
+    this.logger.log(`User logged in: ${user.email}`);
+    return tokens;
   }
 
   async generateTokens(userId: string, email: string): Promise<Tokens> {

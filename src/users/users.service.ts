@@ -24,4 +24,8 @@ export class UsersService {
       data: { hashedRefreshToken: hashedToken },
     });
   }
+
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
 }
