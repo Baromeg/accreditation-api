@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
@@ -69,10 +75,33 @@ export class AuthService {
 
   async generateTokens(userId: string, email: string): Promise<Tokens> {
     const [access_token, refresh_token] = await Promise.all([
-      this.jwtService.signAsync({ sub: userId, email }, { expiresIn: '15m' }),
+      this.jwtService.signAsync({ sub: userId, email }, { expiresIn: '10m' }),
       this.jwtService.signAsync({ sub: userId, email }, { expiresIn: '7d' }),
     ]);
 
     return { access_token, refresh_token };
+  }
+
+  async refreshTokens(userId: string, refreshToken: string): Promise<Tokens> {
+    const user = await this.usersService.getUserById(userId);
+
+    if (!user || !user.hashedRefreshToken) {
+      this.logger.warn(`Refresh failed: No user or token stored (userId=${userId})`);
+      throw new ForbiddenException('Access denied');
+    }
+
+    const isMatch = await bcrypt.compare(refreshToken, user.hashedRefreshToken);
+    if (!isMatch) {
+      this.logger.warn(`Refresh failed: Invalid token for userId=${userId}`);
+      throw new ForbiddenException('Access denied');
+    }
+
+    const tokens = await this.generateTokens(user.id, user.email);
+    const newHashedToken = await bcrypt.hash(tokens.refresh_token, 10);
+
+    await this.usersService.updateRefreshToken(user.id, newHashedToken);
+
+    this.logger.log(`Refresh token used successfully by userId=${user.id}`);
+    return tokens;
   }
 }
