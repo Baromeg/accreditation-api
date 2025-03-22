@@ -10,6 +10,9 @@ stop: ## Stop and remove containers
 logs: ## Tail container logs
 	docker-compose logs -f api
 
+generate: ## Generate Prisma client
+	docker-compose exec api pnpm prisma generate
+
 migrate: ## Run initial Prisma migration
 	docker-compose exec api pnpm prisma:migrate --name init
 
