@@ -16,6 +16,12 @@ generate: ## Generate Prisma client
 migrate: ## Run initial Prisma migration
 	docker-compose exec api pnpm prisma:migrate --name init
 
+test: ## Run unit tests
+	docker-compose exec api pnpm test
+
+test:e2e: ## Run end-to-end tests
+	docker-compose exec api pnpm test:e2e
+	
 studio: ## Open Prisma Studio in container
 	docker-compose exec api pnpm prisma studio
 
