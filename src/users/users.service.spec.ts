@@ -57,4 +57,20 @@ describe('UsersService', () => {
       expect(result.email).toBe(dto.email);
     });
   });
+
+  describe('updateRefreshToken()', () => {
+    it('should update the user refresh token', async () => {
+      prisma.user.update = jest.fn().mockResolvedValue({
+        id: 'user-1',
+        hashedRefreshToken: 'new-hash',
+      });
+
+      await service.updateRefreshToken('user-1', 'new-hash');
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        data: { hashedRefreshToken: 'new-hash' },
+      });
+    });
+  });
 });
