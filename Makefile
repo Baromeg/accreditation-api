@@ -7,9 +7,6 @@ dev: ## Start app in live-reload mode
 stop: ## Stop and remove containers
 	docker-compose down
 
-logs: ## Tail container logs
-	docker-compose logs -f api
-
 generate: ## Generate Prisma client
 	docker-compose exec api pnpm prisma generate
 
@@ -21,9 +18,4 @@ test: ## Run unit tests
 
 teste2e: ## Run end-to-end tests
 	docker-compose exec api pnpm test:e2e
-	
-studio: ## Open Prisma Studio in container
-	docker-compose exec api pnpm prisma studio
 
-bash: ## Open shell in the app container
-	docker-compose exec api sh
