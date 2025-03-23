@@ -80,4 +80,61 @@ describe('AuthService', () => {
       );
     });
   });
+
+  describe('refreshTokens()', () => {
+    it('should return new tokens if refresh token is valid', async () => {
+      const plainToken = 'refresh-token';
+      const hashedToken = await bcrypt.hash(plainToken, 10);
+
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        hashedRefreshToken: hashedToken,
+      };
+
+      usersService.getUserById.mockResolvedValue(mockUser);
+
+      const tokens = await service.refreshTokens(mockUser.id, plainToken);
+
+      expect(tokens).toHaveProperty('access_token');
+      expect(tokens).toHaveProperty('refresh_token');
+      expect(usersService.updateRefreshToken).toHaveBeenCalledWith(mockUser.id, expect.any(String));
+    });
+
+    it('should throw if user does not exist', async () => {
+      usersService.getUserById.mockResolvedValue(null);
+
+      await expect(service.refreshTokens('bad-id', 'some-token')).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('should throw if no refresh token is stored', async () => {
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        hashedRefreshToken: null,
+      };
+
+      usersService.getUserById.mockResolvedValue(mockUser);
+
+      await expect(service.refreshTokens(mockUser.id, 'some-token')).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('should throw if provided token does not match stored hash', async () => {
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        hashedRefreshToken: await bcrypt.hash('some-other-token', 10),
+      };
+
+      usersService.getUserById.mockResolvedValue(mockUser);
+
+      await expect(service.refreshTokens(mockUser.id, 'wrong-token')).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+  });
 });
