@@ -1,99 +1,210 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Accreditation API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A secure, RESTful API built with **NestJS**, **Prisma** and **PostgreSQL** allowing users to register, log in, and manage their accreditations with support for authentication and token refresh.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project is containerised with Docker and leverages a Makefile to streamline development tasks, migrations, and testing.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- NestJS (TypeScript, modular architecture)
+- Prisma (type-safe ORM)
+- PostgreSQL (relational DB)
+- Docker (for local development)
+- pnpm (fast, efficient package manager)
+- Makefile (for predictable, standardised dev commands)
 
-```bash
-$ pnpm install
+---
+
+## Getting Started
+
+### 1. Install Dependencies
+
+```
+pnpm install
 ```
 
-## Compile and run the project
+> I use pnpm for its performance and strict dependency resolution. It ensures a reproducible install and smaller node_modules footprint.
 
-```bash
-# development
-$ pnpm run start
+---
 
-# watch mode
-$ pnpm run start:dev
+### 2. Set Up Environment Variables
 
-# production mode
-$ pnpm run start:prod
+Create a `.env` file at the root (use the .env.example as reference):
+
+```
+DATABASE_URL=postgresql://postgres:postgres@db:5432/accreditation
+JWT_SECRET=your-very-secret-key
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ pnpm run test
+### 3. Run the Stack (API + DB)
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+```
+make start
 ```
 
-## Deployment
+> This command uses Docker Compose to spin up the API and the Postgres DB together. You can also run `make dev` to enable hot reload when saving changes.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 4. Run Migrations and Generate Prisma Client
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
+Once containers are running:
+
+```
+make migrate name=init
+make generate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+These commands:
 
-## Resources
+- Apply schema changes to the DB
+- Generate the Prisma client based on your latest schema
 
-Check out a few resources that may come in handy when working with NestJS:
+---
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Test Coverage
 
-## Support
+This project includes both **unit tests** and **end-to-end tests** to ensure robustness and reliability.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### ✔️ End-to-End Tests
 
-## Stay in touch
+These validate the API endpoints with real HTTP requests and a connected database:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `POST /auth/register` – Registers a new user
+- `POST /auth/login` – Authenticates and returns access + refresh tokens
+- `POST /auth/refresh` – Exchanges refresh token for new tokens
+
+### 🧪 Unit Tests
+
+These validate individual services and business logic in isolation:
+
+- `AuthService.login()` – Validates credentials and returns tokens
+- `AuthService.refreshTokens()` – Handles secure token rotation
+- `UsersService.createUser()` – Hashes password and persists user
+- `UsersService.updateRefreshToken()` – Persists hashed refresh token
+
+> Tests are run inside the containerised environment using `make test` and `make teste2e`.
+
+---
+
+## Authentication Flow
+
+### 1. Registration and Login
+
+- POST /auth/register – Creates a user with hashed password
+- POST /auth/login – Returns access_token (10m) and refresh_token (7d)
+
+### 2. Refreshing Tokens
+
+- POST /auth/refresh – Requires a valid refresh_token and returns a new pair
+
+### 3. Protecting Routes
+
+Routes like /accreditations use a JWT Guard to enforce authentication.
+
+---
+
+## JWT Strategy and Guard
+
+- JwtStrategy extracts the token from the Authorization: Bearer header
+- It validates the token’s signature and decodes the payload (sub = userId)
+- On success, the decoded payload is injected into req.user
+- This lets any controller access the authenticated user context
+
+Example:
+
+@UseGuards(JwtAuthGuard)
+@Get('accreditations')
+getAll(@Request() req) {
+return this.service.findAllForUser(req.user.userId);
+}
+
+---
+
+## DTOs and Validation
+
+All incoming request bodies are validated using DTOs + class-validator.
+
+Example:
+
+export class CreateAccreditationDto {
+@IsString()
+@IsNotEmpty()
+name: string;
+}
+
+These DTOs:
+
+- Ensure only expected data is processed
+- Prevent overposting attacks
+- Provide early feedback to API clients
+
+---
+
+## Accreditations Domain Logic
+
+- Each user can have multiple accreditations
+- Fields: name, status (PENDING/APPROVED/REJECTED), expirationDate
+- Only PENDING accreditations can be deleted
+- Only the name field is editable by the user
+
+---
+
+## Makefile Commands
+
+| Command                | Description                        |
+| ---------------------- | ---------------------------------- |
+| make start             | Start the app and DB containers    |
+| make dev               | Start app with hot-reload          |
+| make stop              | Stop containers                    |
+| make generate          | Generate Prisma client from schema |
+| make migrate name=init | Apply schema migration with name   |
+| make test              | Run unit tests                     |
+| make teste2e           | Run end-to-end tests               |
+
+---
+
+## Example API Flow
+
+1. Register:
+
+POST /auth/register  
+{
+"email": "user@example.com",
+"password": "securePass123",
+"firstName": "Jane",
+"lastName": "Doe"
+}
+
+2. Login:
+
+POST /auth/login  
+→ returns access_token and refresh_token
+
+3. Use access_token to call:
+
+GET /accreditations  
+Authorization: Bearer <access_token>
+
+4. Refresh token when expired:
+
+POST /auth/refresh  
+{
+"refresh_token": "<refresh_token>"
+}
+
+---
+
+## Author
+
+Your Name – https://github.com/Baromeg
+
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT

@@ -16,10 +16,8 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  it('GET / should return health status OK', async () => {
+    const res = await request(app.getHttpServer()).get('/').expect(200);
+    expect(res.text).toEqual('OK');
   });
 });
