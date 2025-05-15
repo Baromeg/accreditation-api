@@ -1,8 +1,42 @@
 # Accreditation API
 
-A secure, RESTful API built with **NestJS**, **Prisma** and **PostgreSQL** allowing users to register, log in, and manage their accreditations with support for authentication and token refresh.
+A production-grade, **secure accreditation management system** built using **NestJS, Prisma, PostgreSQL, and Docker**, designed to demonstrate best practices in **modular architecture**, **token-based authentication**, and **real-world API design**.
 
-This project is containerised with Docker and leverages a Makefile to streamline development tasks, migrations, and testing.
+#### 🔑 Key Achievements
+
+- **Robust User Authentication & Token Management**
+  Designed and implemented a **secure, stateless JWT authentication system** supporting access and refresh tokens, including secure storage and rotation of refresh tokens using hashed persistence.
+
+- **Business-Driven Accreditation Management**
+  Developed full **CRUD functionality** for user-owned accreditations with **business rule enforcement**, including restricted deletion based on status (`PENDING`, `APPROVED`, `REJECTED`).
+
+- **Modular, Scalable System Architecture**
+  Applied **NestJS** best practices to deliver **highly testable**, **modular** components with clear separation of concerns across controllers, services, and data layers.
+
+- **Database Modelling and Migration with Prisma & PostgreSQL**
+  Designed a relational data model using **Prisma schema** and managed schema changes via **safe, versioned migrations**.
+
+- **Automated End-to-End and Unit Testing**
+  Delivered a **comprehensive testing suite**:
+
+  - **E2E Tests**: Cover full user journeys including registration, login, and token refresh.
+  - **Unit Tests**: Validate business logic for authentication, user management, and token handling.
+
+- **Streamlined Developer Experience with Docker & Makefile**
+  Containerised the entire development and testing environment using **Docker Compose**, and simplified onboarding and workflow execution via a **custom Makefile**.
+
+- **Clean Development Workflow & CI Readiness**
+  Structured the project to support **consistent local development**, **testing**, and **production deployment readiness**, aligned with modern CI/CD practices.
+
+---
+
+#### 🌱 **What This Project Taught Me**
+
+- **How to design production-grade, secure authentication flows**.
+- **How to apply architectural principles like Single Responsibility and Separation of Concerns**.
+- **How to balance unit testing and end-to-end testing to validate both logic and integration**.
+- **How to use Docker and Makefiles to streamline developer experience and team workflows**.
+- **How to document, justify, and communicate technical decisions in a professional setting**.
 
 ---
 
